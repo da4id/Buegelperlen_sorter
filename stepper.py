@@ -13,7 +13,12 @@ dir.value(1)
 pos = Pin(21, Pin.IN)
 
 
-def doStep(divider, delay):
+def doStep(divider, delay, direction):
+    if direction:
+        dir.value(0)
+    else:
+        dir.value(1)
+
     halfStep.value(divider & 1)
     quarterStep.value((divider >> 1) & 1)
 
@@ -25,8 +30,16 @@ def doStep(divider, delay):
 
 def doSteps(divider, delay, count):
     for i in range(0, count):
-        doStep(divider, delay)
+        doStep(divider, delay, True)
+
 
 def moveToNextStop(stepSize, stepTime):
     while pos.value() == 1:
-        doStep(stepSize, stepTime)
+        doStep(stepSize, stepTime, True)
+
+
+def turnBack(stepSize, stepTime):
+    while pos.value() == 1:
+        doStep(stepSize, stepTime, False)
+    while pos.value() == 0:
+        doStep(stepSize, stepTime, False)

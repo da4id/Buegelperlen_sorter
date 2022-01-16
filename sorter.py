@@ -1,7 +1,9 @@
 import color
+import servo
 import stepper
 
 colorObj = color.Color()
+servoObj = servo.Servo()
 
 stepSize = 3
 stepTime = 5
@@ -19,51 +21,43 @@ def getColorSmallSteps():
     stepper.moveToNextStop(stepSize, stepTime)
 
     # Drehen bis Rad als Farbe und häufigste Farbe auswertern
-    colorList = []
     rawList = []
-    c = colorObj.getColor()
     while stepper.pos.value() == 0:
-        rawList.append(colorObj.readColor())
-        colorList.append(c)
-        c = colorObj.getColor()
-        stepper.doSteps(stepSize, stepTime, 4)
-    print("Anzahl Messungen: ", len(colorList))
-    colorStat = calcColorStatFromList(colorList)
-    print("haufigste Farbe: ", colorStat)
-
-    colorSmallestError = getColorWithSmallestErrorFromList(colorList)
-    print("Farbe mit kleinstem Fehler: ", colorSmallestError)
-
-    if 8 <= len(colorList) <= 13:
-        print("25%", rawList[int(len(rawList) / 4)])
-        print("50%", colorObj.getColorFromList(rawList[int(len(rawList) / 2)], color.colors50))
-        print("75%", colorObj.getColorFromList(rawList[int(len(rawList) / 4 * 3)], color.colors75))
-
-    return colorStat
-
-
-def calcColorStatFromList(colorList):
-    colorStat = {}
-    for i in colorList:
-        if i[2] in colorStat:
-            colorStat[i[2]] += 1
+        if len(rawList) <= 5:
+            rawList.append((0, 0, 0))
         else:
-            colorStat[i[2]] = 1
-    return colorStat
+            rawList.append(colorObj.readColor())
+        stepper.doSteps(stepSize, stepTime, 4)
+    print("Anzahl Messungen: ", len(rawList))
 
-
-def getColorWithSmallestErrorFromList(colorList):
-    e = 999999
-    c = color.colorsHs[0]
-    for i in colorList:
-        if i[3] < e:
-            c = i
-            e = i[3]
-    return c
+    if 8 <= len(rawList) <= 13:
+        rawColor = rawList[int(len(rawList) / 4 * 3)]
+        c = colorObj.getColorFromList(rawColor, color.colors75)
+        print("75%: ", c, " - Raw: ", rawColor)
+        return c
+    return False
 
 
 def getNextColor():
-    c = getColorSmallSteps()
-    print(c)
+    while getColorSmallSteps() == False:
+        stepper.turnBack(stepSize, stepTime)
     stepper.doSteps(stepSize, stepTime, 350)
     stepper.moveToNextStop(stepSize, stepTime)
+
+
+def doSorting():
+    run = True
+    tot = 0
+    error = 0
+    while run:
+        tot = tot + 1
+        getNextColor()
+        r = input('korrekt?')
+        if r == "q":
+            run = False
+        elif r == "y" or r == "":
+            servoObj.setAngle(90)
+        else:
+            error = error + 1
+            servoObj.setAngle(0)
+    print('tot', tot, 'error', error)
