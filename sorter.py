@@ -43,7 +43,7 @@ def getNextColor():
     while c == False:
         stepper.turnBack(stepSize, stepTime)
         c = getColorSmallSteps()
-    servoObj.setBin(c[4])
+    servoObj.setBinByColor(c[3])
     stepper.doSteps(stepSize, stepTime, 350)
     stepper.moveToNextStop(stepSize, stepTime)
 
