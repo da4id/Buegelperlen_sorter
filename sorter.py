@@ -39,8 +39,11 @@ def getColorSmallSteps():
 
 
 def getNextColor():
-    while getColorSmallSteps() == False:
+    c = getColorSmallSteps()
+    while c == False:
         stepper.turnBack(stepSize, stepTime)
+        c = getColorSmallSteps()
+    servoObj.setBin(c[4])
     stepper.doSteps(stepSize, stepTime, 350)
     stepper.moveToNextStop(stepSize, stepTime)
 
@@ -48,16 +51,7 @@ def getNextColor():
 def doSorting():
     run = True
     tot = 0
-    error = 0
     while run:
         tot = tot + 1
         getNextColor()
-        r = input('korrekt?')
-        if r == "q":
-            run = False
-        elif r == "y" or r == "":
-            servoObj.setAngle(90)
-        else:
-            error = error + 1
-            servoObj.setAngle(0)
-    print('tot', tot, 'error', error)
+    print('tot', tot)

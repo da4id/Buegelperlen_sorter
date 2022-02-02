@@ -1,5 +1,7 @@
 import machine
 
+steps = [22, 37, 53, 70, 85, 99, 115, 130, 143, 158]
+
 
 class Servo:
     def __init__(self):
@@ -10,3 +12,6 @@ class Servo:
         # 0° = 30
         # 180° = 126
         self.servo.duty(int(((126 - 30) / 180 * angle) + 30))
+
+    def setBin(self, index):
+        self.setAngle(steps[index])
