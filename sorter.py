@@ -1,4 +1,5 @@
 import color
+import colorMap
 import servo
 import stepper
 
@@ -7,6 +8,8 @@ servoObj = servo.Servo()
 
 stepSize = 3
 stepTime = 5
+
+errorLimit = 500
 
 
 # 50 Schritte = 90° bei 1.8° pro Schritt
@@ -32,8 +35,17 @@ def getColorSmallSteps():
 
     if 8 <= len(rawList) <= 13:
         rawColor = rawList[int(len(rawList) / 4 * 3)]
-        c = colorObj.getColorFromList(rawColor, color.colors75)
-        print("75%: ", c, " - Raw: ", rawColor)
+        c = colorObj.getColorFromList(rawColor, colorMap.learningColorMap)
+        print("75%: ", c, " - Raw: ", rawColor, servoObj.getColorByBinNr(c[3]))
+        colorStr = input("korrekte Farbe (enter für ok): ")
+
+        if colorStr != "":
+            if colorStr == "":
+                colorStr = c[3]
+            print("Speichere Farbe ", colorStr, servoObj.getBinNrByColor(colorStr))
+            colorMap.learningColorMap.append(
+                (rawColor[0], rawColor[1], rawColor[2], servoObj.getBinNrByColor(colorStr)))
+            c = colorObj.getColorFromList(rawColor, colorMap.learningColorMap)
         return c
     return False
 
@@ -43,7 +55,7 @@ def getNextColor():
     while c == False:
         stepper.turnBack(stepSize, stepTime)
         c = getColorSmallSteps()
-    servoObj.setBinByColor(c[3])
+    servoObj.setBin(c[3])
     stepper.doSteps(stepSize, stepTime, 350)
     stepper.moveToNextStop(stepSize, stepTime)
 

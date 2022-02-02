@@ -27,6 +27,9 @@ class Servo:
         self.servo.duty(int(((126 - 30) / 180 * angle) + 30))
 
     def setBin(self, index):
+        if index == -1:
+            self.setAngle(0)
+            return
         self.setAngle(steps[index])
 
     def setBinByColor(self, color):
@@ -35,3 +38,13 @@ class Servo:
         except KeyError:
             print("Unbekannte Farbe!!!: " + color)
             self.setAngle(0)
+
+    def getBinNrByColor(self, color):
+        try:
+            return colorBinMap[color]
+        except KeyError:
+            print("Unbekannte Farbe!!!: " + color)
+            return -1
+
+    def getColorByBinNr(self, binNr):
+        return list(colorBinMap.keys())[list(colorBinMap.values()).index(binNr)]

@@ -51,7 +51,7 @@ class Color:
         bus = machine.I2C(sda=machine.Pin(27), scl=machine.Pin(26))  # adjust pin numbers as per hardware
         self.tcs = TCS34725(bus)
         self.tcs.setGain(4)
-        #self.tcs.setIntegration_time(155)
+        self.tcs.setIntegration_time(155)
 
         print("Gain", self.tcs.getGain())
 
@@ -72,7 +72,7 @@ class Color:
         return c + tuple([e])
 
     def readColor(self):
-        return self.tcs.color_rgb_bytes()
+        return self.tcs.color_raw()[0:3]
 
     def readColorHsv(self):
         c = self.tcs.color_rgb_bytes()
