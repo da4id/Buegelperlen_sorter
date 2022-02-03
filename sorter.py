@@ -17,17 +17,17 @@ trainingActive = False
 
 def initialise():
     print("Suche nächste Farbe....")
-    stepper.moveToNextStop(stepSize, stepTime)
+    stepper.moveToNextStop(stepSize, stepTime, 600)
 
 
 def getColorSmallSteps():
     # Drehen bis nicht mehr Rad als Farbe
-    stepper.moveToNextStop(stepSize, stepTime)
+    stepper.moveToNextStop(stepSize, stepTime, 450)
 
     # Drehen bis Rad als Farbe und häufigste Farbe auswertern
     rawList = []
     while stepper.pos.value() == 0:
-        if len(rawList) <= 5:
+        if len(rawList) <= 5 or len(rawList) >= 10:
             rawList.append((0, 0, 0))
         else:
             rawList.append(colorObj.readColor())
@@ -41,7 +41,7 @@ def getColorSmallSteps():
 
         if trainingActive:
             colorStr = input("korrekte Farbe (enter für ok): ")
-            if colorStr != "":
+            if c[4] > errorLimit or colorStr != "":
                 if colorStr == "":
                     colorStr = c[3]
                 print("Speichere Farbe ", colorStr, servoObj.getBinNrByColor(colorStr))
@@ -59,7 +59,7 @@ def getNextColor():
         c = getColorSmallSteps()
     servoObj.setBin(c[3])
     stepper.doSteps(stepSize, stepTime, 350)
-    stepper.moveToNextStop(stepSize, stepTime)
+    stepper.moveToNextStop(stepSize, stepTime, 450)
 
 
 def doSorting():

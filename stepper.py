@@ -33,8 +33,21 @@ def doSteps(divider, delay, count):
         doStep(divider, delay, True)
 
 
-def moveToNextStop(stepSize, stepTime):
+def moveToNextStop(stepSize, stepTime, limit):
+    count = 0
     while pos.value() == 1:
+        count = count + 1
+        doStep(stepSize, stepTime, True)
+        if count >= limit:
+            count = 0
+            turnBackToSensor(stepSize, stepTime)
+
+
+#zurückdrehen bis Sensor wieder angibt, danach vorwärt bis Sensor nicht mehr angibt
+def turnBackToSensor(stepSize, stepTime):
+    while pos.value() == 1:
+        doStep(stepSize, stepTime, False)
+    while pos.value() == 0:
         doStep(stepSize, stepTime, True)
 
 
