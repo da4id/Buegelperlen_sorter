@@ -10,7 +10,7 @@ stepSize = 3
 stepTime = 5
 
 errorLimit = 1500
-trainingActive = True
+trainingActive = False
 trainingAll = False
 
 
